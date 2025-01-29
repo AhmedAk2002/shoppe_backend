@@ -10,4 +10,4 @@ export const feedbacks = new Schema({
     
 }, { timestamps: true });
 
-module.exports = mongoose.model('feedback', feedbacks);
+export default mongoose.model('feedbacks', feedbacks);

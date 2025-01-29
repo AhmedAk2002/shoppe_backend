@@ -1,7 +1,6 @@
-// const mongoose = require('mongoose');
+// import mongoose from 'mongoose';
 
-
-// const marketDetailsSchema = new mongoose.Schema({
+// export const marketDetailsSchema = new mongoose.Schema({
 //     id: { type: String, required: true },
 //     name: { type: String, required: true },
 //     phonenumber: { type: String, required: true },
@@ -25,4 +24,4 @@
 // }, { timestamps: true });
    
 
-// module.exports = mongoose.model('market', marketDetailsSchema);
+// export default mongoose.model('market_details', marketDetailsSchema);

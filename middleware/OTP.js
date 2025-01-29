@@ -1,6 +1,6 @@
 export const generateOtp = function (length) {
     try {
-      if (typeof length === "undefined") length = 32;
+      if (typeof length === "undefined") length = 4;
       var otpCode = "";
       var possible = "123456789";
       for (var i = 0; i < length; i++)
@@ -8,9 +8,10 @@ export const generateOtp = function (length) {
       return otpCode;
     } catch (error) {
       console.error(error);
+    
     }
   };
-
+export default generateOtp
 // xaraf
 // function generateAlphanumericOtp(length = 6) {
 //     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

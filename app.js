@@ -2,14 +2,16 @@ import express from 'express';
 import mongoose from 'mongoose';
 import fs from 'fs';
 import HttpError from './models/Httperror.js'; 
-import {router} from './routes/all_routs.js';
+import router from './routes/all_routs.js';
 
+
+const port = 3000;
 const app = express();
 
 app.use(express.json());
 
 app.use('/', router);
-
+// console.log(router);
 
 app.use((req, res, next) => {
     const error = new HttpError('Could not find this route', 404);
@@ -33,10 +35,12 @@ mongoose.connect(
     'mongodb+srv://ahmedc137b:12345@theclustergems.sztl7.mongodb.net/'
 )
     .then(() => {
-        app.listen(3000, '0.0.0.0', () => {
-            console.log('Server is running on port 3000');
+        app.listen(port, '0.0.0.0', () => {
+            console.log(`Server is running on port ${port}`);
+            console.log('mongoDB connected');
         });
     })
     .catch(err => {
         console.log(err);
+        console.log('mongoDB not connected');
     });

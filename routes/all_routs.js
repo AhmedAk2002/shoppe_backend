@@ -1,5 +1,7 @@
 
-import { check } from "express-validator"
+import check  from "express-validator"
+import express from "express";
+
 
 import { signup , login, getimage ,
     generateOtpController ,
@@ -9,25 +11,24 @@ import { signup , login, getimage ,
        getmarketdetails , Trip, createDriver, getres} from "../controllers/user-controller.js"
 
 
-export default (router) =>{
-    
-router.route('/api/:phonenumber').get(getres);
 
-router.route('/').get(getUsers);
+const router = express.Router();
+
+
+router.route('/api/:phonenumber').get(getUsers);
+
+router.route('/').get(getres);
+router.route('/login').post(login)
 
 router.route('/signup').post(signup);
 
 router.route('/image').get(getimage);
-
 
 router.route('/api/otp').post(generateOtpController);
 
 router.route('/api/editprofile').patch(editprofile);
 
 // router.use(Authcheck);
-
-router.route('/login').post(login);
-
 
 router.route('/api/updateuser').patch(recoverpassword);
 
@@ -41,6 +42,5 @@ router.route('/api/getmarketdetails').post(getmarketdetails);
 
 router.route('/api/trip').post(Trip);
 
-};
 
-
+export default router

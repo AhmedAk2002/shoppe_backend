@@ -7,8 +7,10 @@ export const tripSchema = new Schema({
     location:{type:String, required: true},
     destnation :{type: String,required : true}
 },{
-    timestamps:  true
-})
-module.exports = mongoose.model('Trip', tripSchema);
+    timestamps:true
+});
+
+
+export default mongoose.model('trips', tripSchema);
 
 

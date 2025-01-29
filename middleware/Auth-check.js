@@ -1,7 +1,9 @@
-const jwt= require('jsonwebtoken');
-const HttpError = require("../models/Httperror");
+import jwt from 'jsonwebtoken';
+import HttpError from '../models/Httperror.js';
 
-module.exports=(req,res,next)=>{
+exports.checkAuth = (req, res, next) => {
+
+}
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
@@ -21,5 +23,4 @@ module.exports=(req,res,next)=>{
     console.log(err);
     console.log(authHeader);
     return next(error);
-}
 };
