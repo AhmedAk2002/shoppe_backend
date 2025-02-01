@@ -8,7 +8,10 @@ import User from "../models/user.js"
 import feedbacks from "../models/customerFeedback.js"
 import driver from "../models/Driver.js"
 import trip from "../models/trip.js"
-import AUTH_ERROR_CODE from "../middleware/errorHandler.js"
+import ErrorHandler from "../middleware/errorHandler.js"
+
+
+
 
 const otp = generateOtp();
 
@@ -31,7 +34,12 @@ export const getUsers = async (req, res, next) => {
     const phonenumber = req.params.phonenumber;
 
     if (!phonenumber) {
-        return next(new cilad("Phone number is required", 400));
+        res.json({
+            success:true,
+            ErrorHandler:ERROR_CODE.USER_PHONE_NUMBER_REQUIRE
+
+        })
+        
     }
 
     try {
@@ -42,7 +50,12 @@ export const getUsers = async (req, res, next) => {
         // console.log(user);
         
         if (!user) {
-            return next(new cilad("User not found", 404));
+              return res.status(401).json({
+                success: false,
+                ErrorHandler: ErrorHandler.WRONG_USER
+                
+            })
+        
         }
 
         res.status(200).json({
@@ -62,7 +75,12 @@ export const getUsers = async (req, res, next) => {
                 });
     } catch (error) {
         console.error('Error fetching user:', error);
-        return next(new cilad("Server error", 500));
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.FETCHING_USER_FAILED
+            
+        })
+    
     }
 };
 
@@ -70,10 +88,7 @@ export const getUsers = async (req, res, next) => {
 // Sign up a new user
 export const signup = async (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        console.error(errors.array()); // Log validation errors
-        return next(new cilad("Invalid inputs passed, please check your data", 422));
-    }
+   
 
     const { name, phonenumber, email, password, money ,referred , transections , inactive } = req.body;
 
@@ -81,15 +96,22 @@ export const signup = async (req, res, next) => {
     try {
         existUser = await User.findOne({ email: email });
     } catch (err) {
-        const error = new cilad("Signup failed, please try again later", 500);
         console.error("Error checking existing user:", err);
-        return next(error);
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.SIGNUP_FAILED
+        
+        });
     }
     
         
 
     if (existUser) {
-        return next (new cilad("User already exists, log in instead", 422));
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.USER_EXIST
+            
+        });
     };
 
     // Validate email format
@@ -113,6 +135,7 @@ export const signup = async (req, res, next) => {
         console.error("Error during password hashing:", err);
         return next(error);
     }
+   
  
     // Default money
     const Money = money || 1400;
@@ -139,8 +162,13 @@ export const signup = async (req, res, next) => {
         await createdUser.save();
     } catch (err) {
         console.error("Error saving user to database:", err.message, err);
-        return next(new cilad("Signup failed, try again later", 500));
-    }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.SIGNUP_FAILED
+            
+        });
+    };
+    
 
     let token;
     try {
@@ -152,8 +180,13 @@ export const signup = async (req, res, next) => {
 
     } catch (err) {
         console.error("Error generating token:", err);
-        return next(new cilad("Signing up/token failed, try again later", 500));
-    }
+         return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.ERROR_GENERATING_TOKEN
+            
+        });
+    };
+    
 
     res.status(201).json({
         message: "User created successfully",
@@ -167,10 +200,7 @@ export const signup = async (req, res, next) => {
 export const login = async (req, res, next) => {
     const { email, phonenumber, password } = req.body;
     const error = validationResult(req);
-
-    if (!error.isEmpty()) {
-        return next(new cilad("No valid data passed, update error", 422));
-    }
+    
     // console.log(req.body);
 
     // Log the input received from the frontend
@@ -182,17 +212,21 @@ export const login = async (req, res, next) => {
     try {
         // Find the user by email
         existingUser = await User.findOne({ email: email });
-
         if(!existingUser || existingUser == null){
-            const error = new cilad("this user does not exist", 404)
-            return next(error);
-        }
-    
+            return res.json({
+                success: false,
+                ErrorHandler: ErrorHandler.USER_NAME_NOT_FOUND
+            });
+        };
 
         // Verify phone number
         if (existingUser.phonenumber !== phonenumber) {
-            return next(new cilad("Invalid number, could not log you in.", 401));
-        }
+            return res.status(401).json({
+                success: false,
+                ErrorHandler: ErrorHandler.INVALID_PHONENUMBER
+                
+            });
+        };
 
         // Compare the password
         const isValidPassword = await bcrypt.compare(password, existingUser.password);
@@ -217,16 +251,26 @@ export const login = async (req, res, next) => {
             if (!isValidPassword) {
                 return res.status(401).json({
                     success: false,
-                    error: AUTH_ERROR_CODE.USER_PASSWORD_INCORRECT
+                    ErrorHandler: ErrorHandler.USER_PASSWORD_INCORRECT
                     
                 })
+            }
+            if (!error.isEmpty()) {
+                return res.status(401).json({
+                    success: false,
+                    ErrorHandler: ErrorHandler.REQUEST_IS_EMPTY
+                    
+                });
             }
 
             // Optionally save the updated user (if you need to persist the token)
             await existingUser.save();
         } catch (err) {
-            console.error("Error generating token:", err);
-            return next(new cilad("Signing up/token failed, try again later", 500));
+            return res.status(401).json({
+                success: false,
+                ErrorHandler: ErrorHandler.USER_EXIST
+                
+            })
         }
 
         // Send success response
@@ -235,27 +279,38 @@ export const login = async (req, res, next) => {
             user : existingUser
         });
     } catch (error) {
-        console.error("Login error:", error);
-        return next(new cilad("Logging in failed, please try again later.", 500));
+        return res.status(401).json({
+            success: false,
+            ErrorHandler: ErrorHandler.LOGIN_FAILED
+            
+        })
     }
 };
+
 
 
 export const recoverpassword = async (req, res, next) => {
     const error = validationResult(req);
 
-    if (!error.isEmpty()) {
-        return next(new cilad("No valid data passed, update error", 422));
-    }
+    
 
     const { email, password } = req.body;
 
-    if (!email || !password) {
-        return next(new cilad("Email and password are required", 422));
+    if (!email ) {
+        return res.status(401).json({
+            success: false,
+            ErrorHandler: ErrorHandler.EMAIL_REQUIRED
+            
+        })
     }
+    
+    if(!password){
+        return res.status(401).json({
+            success: false,
+            ErrorHandler: ErrorHandler.USER_PASSWORD_INCORRECT
+            
+        })
 
-    if (password.length < 4) {
-        return next(new cilad("Password must be at least 4 characters long", 422));
     }
 
     let user;
@@ -264,19 +319,39 @@ export const recoverpassword = async (req, res, next) => {
         user = await User.findOne({ email: email });
     } catch (err) {
         console.error("Error finding user:", err);
-        return next(new cilad("User not found or exists", 500));
-    }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.USER_NOT_EXIST
+            
+        });
+    };
 
     if (!user) {
-        return next(new cilad("User not found", 404));
-    }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.WRONG_USER
+            
+        });
+    };
 
     // Compare the old password with the new password
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
         // If the old password is the same as the new one, return an error
-        return next(new cilad("New password cannot be the same as the old password", 400));
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.USER_NOT_EXIST
+            
+        });
+    };
+    if (!error.isEmpty()) {
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.REQUEST_IS_EMPTY
+            
+        })
+    
     }
 
     try {
@@ -290,8 +365,12 @@ export const recoverpassword = async (req, res, next) => {
         await user.save();
     } catch (err) {
         console.error("Error saving user:", err);
-        return next(new cilad("Something went wrong while saving the user", 500));
-    }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.ERRORR_SAVING_USER
+            
+        });
+    };
 
     res.status(200).json({ status: 'Password updated successfully', user: user.toObject({ getters: true }) });
 };
@@ -300,33 +379,37 @@ export const recoverpassword = async (req, res, next) => {
 export const editprofile = async (req, res, next) => {
     const error = validationResult(req);
 
-    if (!error.isEmpty()) {
-        console.log("Validation Errors:", error.array());
-        return next(new cilad("Invalid input, please check your data", 422));
-    }
+    
 
     const { email, name } = req.body;
 
     if (!email || !name) {
         console.log("Missing fields:", req.body);
-        return next(new cilad("All fields are required", 422));
-    }
-
+        return res.status(401).json({
+            success: false,
+            ErrorHandler: ErrorHandler.ALL_FEILDS_REQUIRED
+        });
+    };
     let user;
     try {
         user = await User.findOne({ email: email });
     } catch (err) {
         // console.error("Error finding user:", err);
-        return next(new cilad("Something went wrong, could not update the profile", 500));
-    }
-    if(user.name === name){
-        return next( new cilad("name canbe the same as the old one", 400));
-    }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.ERRORR_SAVING_DRIVER
+        });
+    };
+
 
     if (!user) {
         // console.error("User not found:", email);
-        return next(new cilad("User not found", 404));
-    }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.USER_NOT_EXIST
+        });
+    };
+    
 
     try {
         user.name = name;
@@ -335,8 +418,11 @@ export const editprofile = async (req, res, next) => {
         await user.save();
     } catch (err) {
         // console.error("Error saving user:", err);
-        return next(new cilad("Something went wrong while updating the profile", 500));
-    }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.ERRORR_SAVING_PRIFILE
+        });
+    };
 
     res.status(200).json({ message: "Profile name updated successfully"});
 };
@@ -345,29 +431,37 @@ export const editprofile = async (req, res, next) => {
 export const generateOtpController = async (req, res, next) => {
     try {
       const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        console.error(errors.array()); // Log validation errors
-        return next(new cilad("Invalid inputs passed, please check your data", 422));
-      }
-  
+     
       const { phonenumber } = req.body;
   
       if (!phonenumber) {
-        return next(new cilad("Please fill all fields", 400));
-      }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.USER_PHONE_NUMBER_REQUIRE
+            
+        });
+    };
   
       let existingUser;
       try {
         existingUser = await User.findOne({ phonenumber: phonenumber });
       } catch (err) {
-        const error = new cilad("Signup failed, please try again later", 500);
-        // console.error("Error checking existing user:", err);
-        return next(error);
-      }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.SIGNUP_FAILED
+            
+        });
+    };
   
       if (!existingUser) {
-        return next(new cilad("User does not exist", 422));
-      }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.USER_NOT_EXIST
+            
+        });
+    };
+      
+  
 
     //   if(existingUser){
     //     const error = new cilad("User already exists, log in instead", 422);
@@ -378,7 +472,7 @@ export const generateOtpController = async (req, res, next) => {
      
   
       // Optional: Log OTP for debugging (remove in production)
-      console.log(`Generated OTP for ${phonenumber}: ${otp}`);
+    //   console.log(`Generated OTP for ${phonenumber}: ${otp}`);
   
       // You might want to save the OTP to the user or session here for verification later
   
@@ -404,8 +498,12 @@ export const getres = async (req, res, next) => {
         res.status(200).json({ users });
     } catch (err) {
         console.error('Error fetching users:', err);
-        return next(new cilad('Fetching users failed, please try again later.', 500));
-    }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.FETCHING_USER_FAILED
+            
+        });
+    };
 };
 
 // const getres = async (req, res, next) => {
@@ -457,16 +555,17 @@ export const getres = async (req, res, next) => {
 
 export const createDriver = async (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        console.error("Validation errors:", errors.array());
-        return next(new cilad("Invalid inputs passed, please check your data", 422));
-    }
+    
 
     const { name, phonenumber, tarigo, description, image, type } = req.body;
     console.log(req.body);
 
     if (!name && !phonenumber && !tarigo && !description && !image && !type) {
-        return next(new cilad("All fields are required", 422));
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.ALL_FEILDS_REQUIRED
+            
+        });
     }
 
     // Check if a driver with the same phone number already exists
@@ -475,7 +574,11 @@ export const createDriver = async (req, res, next) => {
         existingDriver = await driver.findOne({ phonenumber: phonenumber });
     } catch (err) {
         console.error("Error checking existing driver:", err);
-        return next(new cilad("Could not check for existing driver, please try again later.", 500));
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.COULD_NOT_CHECK_EXISTING_DRIVER
+            
+        });
     }
 
     if (existingDriver) {
@@ -499,30 +602,35 @@ export const createDriver = async (req, res, next) => {
         console.error("Error saving driver:", err);
         return next(new cilad("Creating driver failed, please try again later.", 500));
     }
+    
 };
 
 
 export const dailyReport = async (req, res, next) => {
     try {
         const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            console.error("Validation errors:", errors.array());
-            return next(new cilad("Invalid inputs passed, please check your data", 422));
-        }
-    
+      
         const { phonenumber } = req.body;
     
         if (!phonenumber) {
-            return next(new cilad("Phone number is required", 400));
-        }
+            return res.status(401).json({
+                success: false,
+                ErrorHandler: ErrorHandler.USER_PHONE_NUMBER_REQUIRE
+                
+            });
+        };
     
         const allowedPhoneNumbers = ["615880177"]; 
         
     
         // Check if the provided phone number matches the allowed number
         if (!allowedPhoneNumbers.includes(phonenumber)) {
-            return next(new cilad("Phone number not allowed", 403));
-        }
+            return res.json({
+                success: false,
+                ErrorHandler: ErrorHandler.ALLOWE_PHONENUMEBR
+                
+            });
+        };
         res.status(200).json({
             success: true,
             AdminPhone: phonenumber,
@@ -542,10 +650,7 @@ export const dailyReport = async (req, res, next) => {
 
 export const getCustomerFeedback = async (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        console.error(errors.array()); // Log validation errors
-        return next(new cilad("Invalid inputs passed, please check your data", 422));
-    }
+   
 
     const { title, message, phonenumber } = req.body;
     // console.log(req.body);
@@ -578,8 +683,13 @@ export const getCustomerFeedback = async (req, res, next) => {
         // const allowedIds = ["675946e9a4cc2d66d780a672"];
 
         if (!allowedPhoneNumbers.includes(phonenumber)) {
-            return next(new cilad("Phone number not allowed", 403));
+            return res.json({
+                success: false,
+                ErrorHandler: ErrorHandler.ALLOWE_PHONENUMEBR
+                
+            });
         }   
+        
         // if (!allowedIds.includes(id)) {
         //     return next(new cilad("Marketter ID not allowed", 403));
         // }
@@ -601,28 +711,34 @@ export const getCustomerFeedback = async (req, res, next) => {
             });
                 } catch (err) {
             console.error("Error saving feedback:", err);
-            return next(new cilad("Creating feedback failed, please try again later.", 500));
+            return res.json({
+                success: false,
+                ErrorHandler: ErrorHandler.ERRORR_SAVING_FEEDBACK
+                
+            });
         }
-
         // Respond with success
     } catch (error) {
         console.error("Error processing customer feedback:", error);
-        return next(new cilad("Internal Server Error", 500));
-    }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.SERVER_ERROR
+            
+        });
+    };
 };
 export const getmarketdetails = async (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        console.error('Validation errors:', errors.array());
-        return next(new cilad("Invalid inputs passed, please check your data", 422));
-    }
+    
 
     const { id } = req.body;
 
     if (!id) {
-        return next(new cilad("ID is required", 400));
+        return res.status(400).json({
+            success: false,
+            message: 'id is required.'
+        });
     }
-
 
     try {
         // Fetch market details from the database
@@ -631,8 +747,12 @@ export const getmarketdetails = async (req, res, next) => {
 
 
         if (!marketDetails ||marketDetails == null) {
-            return next(new cilad("Market details not found", 404));
+            return res.status(404).json({
+                success: false,
+                message: 'Market details not found.'
+            });
         }
+       
 
         // Destructure fields from marketDetails
         const {
@@ -677,16 +797,17 @@ export const getmarketdetails = async (req, res, next) => {
         
     } catch (err) {
         console.error('Error fetching market details:', err);
-        return next(new cilad("Fetching market details failed, please try again later.", 500));
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.FETCHING_USER_FAILED
+            
+        });
     }
 };
 
 export const Trip = async(req,res,next)=>{
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        console.error('Validation errors:', errors.array());
-        return next(new cilad("Invalid inputs passed, please check your data", 422));
-    }
+  
 
     const {phonenumber,destnation,location}= req.body
 
@@ -695,9 +816,12 @@ try{
     existingTrip = await trip.findOne({phonenumber});
     
     if(existingTrip){
-        return next(new cilad("trip already exist", 403));
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.TRIP_ALREDY_EXIST
+            
+        });
     }
-
 
     if(!phonenumber){
         return next(new cilad("phone required", 403));
@@ -708,6 +832,7 @@ try{
     if(!location){
         return next(new cilad("location required", 403));
     };
+
 
     const createdTrip = new trip({destnation,location,phonenumber});   
     await createdTrip.save();
@@ -724,47 +849,57 @@ try{
     
     }catch(err){
         console.error('trip erro:', err);
-        return next(new cilad("creating trip failed.", 500));
-
-    }
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.CREATING_TRIP_FAILED
+            
+        });
+    };
 };
 
 
 export const getUserByToken = async (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        console.error('Validation errors:', errors.array());
-        return next(new cilad("Invalid inputs passed, please check your data", 422));
-    }
+    
 
     const {token} = req.body;
 
     if(!token){
-        return next(new cilad("token required", 403));
-    };
-
-    if(token == null){
-        return next(new cilad("token required", 403));
-    };
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.TOKEN_REQUIRE
+            
+        });
+    }
+    
     
     try {
         const user = await User.findOne({ token });
         if (!user) {
-            return next(new cilad("User not found", 404));
+            return res.json({
+                success: false,
+                ErrorHandler: ErrorHandler.WRONG_USER
+                
+            });
         }
+        
 
         res.status(200).json({
             success: true,
             user: {
-                name: user.name,
                 id: user._id,
+                name: user.name,
                 email: user.email,
                 phonenumber: user.phonenumber,
-                token : user.token,
+                
             },
         });
     } catch (err) {
         console.error('Error fetching user by token:', err);
-        return next(new cilad("Fetching user by token failed, please try again later.", 500));
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.FETCHING_USER_BY_TOKEN
+            
+        });
     }
 }

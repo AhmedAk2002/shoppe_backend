@@ -19,7 +19,7 @@ import { signup , login, getimage ,
 
 const router = express.Router();
 
-router.route('/api/token').get(getUserByToken);
+router.route('/api/get_user_by_token').get(getUserByToken);
 
 router.route('/api/:phonenumber').get(getUsers);
 
