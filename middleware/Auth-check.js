@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken';
 import HttpError from '../models/Httperror.js';
 
-exports.checkAuth = (req, res, next) => {
+const checkAuth = (req, res, next) => {
 
-}
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
@@ -15,6 +14,10 @@ exports.checkAuth = (req, res, next) => {
         const error = new HttpError('No token provided',401);
         return next(error);
     }
+    if(token.user === token){
+        const error = new HttpError('wrong token',401);
+        return next(error);
+    }
     const decoded = jwt.verify(token,'defaultsecret');
     req.userData={ email : decoded.email };
     next();
@@ -24,3 +27,7 @@ exports.checkAuth = (req, res, next) => {
     console.log(authHeader);
     return next(error);
 };
+}
+
+
+export default checkAuth;

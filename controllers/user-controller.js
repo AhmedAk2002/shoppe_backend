@@ -8,6 +8,7 @@ import User from "../models/user.js"
 import feedbacks from "../models/customerFeedback.js"
 import driver from "../models/Driver.js"
 import trip from "../models/trip.js"
+import AUTH_ERROR_CODE from "../middleware/errorHandler.js"
 
 const otp = generateOtp();
 
@@ -199,9 +200,7 @@ export const login = async (req, res, next) => {
         // Log the password comparison result
         // console.log("Password comparison result:", isValidPassword);
 
-        if (!isValidPassword) {
-            return next(new cilad("Invalid password, could not log you in.", 401));
-        }
+        
 
         // Generate token
         let token;
@@ -213,8 +212,15 @@ export const login = async (req, res, next) => {
                 // { expiresIn: '3h' }
             );
             existingUser.token = token; // Assign token to the user object
-            console.log("Token from request:", token);
+            // console.log("Token from request:", token);
 
+            if (!isValidPassword) {
+                return res.status(401).json({
+                    success: false,
+                    error: AUTH_ERROR_CODE.USER_PASSWORD_INCORRECT
+                    
+                })
+            }
 
             // Optionally save the updated user (if you need to persist the token)
             await existingUser.save();
@@ -225,7 +231,8 @@ export const login = async (req, res, next) => {
 
         // Send success response
         res.status(200).json({
-            message: "Login successful"
+            message: "Login successful",
+            user : existingUser
         });
     } catch (error) {
         console.error("Login error:", error);
@@ -715,10 +722,49 @@ try{
     });
     
     
-}catch(err){
-    console.error('trip erro:', err);
-    return next(new cilad("creating trip failed.", 500));
+    }catch(err){
+        console.error('trip erro:', err);
+        return next(new cilad("creating trip failed.", 500));
 
-}
+    }
+};
 
+
+export const getUserByToken = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        console.error('Validation errors:', errors.array());
+        return next(new cilad("Invalid inputs passed, please check your data", 422));
+    }
+
+    const {token} = req.body;
+
+    if(!token){
+        return next(new cilad("token required", 403));
+    };
+
+    if(token == null){
+        return next(new cilad("token required", 403));
+    };
+    
+    try {
+        const user = await User.findOne({ token });
+        if (!user) {
+            return next(new cilad("User not found", 404));
+        }
+
+        res.status(200).json({
+            success: true,
+            user: {
+                name: user.name,
+                id: user._id,
+                email: user.email,
+                phonenumber: user.phonenumber,
+                token : user.token,
+            },
+        });
+    } catch (err) {
+        console.error('Error fetching user by token:', err);
+        return next(new cilad("Fetching user by token failed, please try again later.", 500));
+    }
 }

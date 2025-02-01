@@ -1,4 +1,4 @@
-export const generateOtp = function (length) {
+const generateOtp = function (length) {
     try {
       if (typeof length === "undefined") length = 4;
       var otpCode = "";
@@ -7,7 +7,7 @@ export const generateOtp = function (length) {
         otpCode += possible.charAt(Math.floor(Math.random() * possible.length));
       return otpCode;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     
     }
   };
