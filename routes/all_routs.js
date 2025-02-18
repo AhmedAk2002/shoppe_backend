@@ -1,8 +1,5 @@
-
-import check  from "express-validator"
-import express from "express";
-import Authcheck from "../middleware/Auth-check.js"
-
+import {checkAuth} from "../middleware/Auth-check.js"
+import express from "express"
 
 import { signup , login, getimage ,
     generateOtpController ,
@@ -10,10 +7,11 @@ import { signup , login, getimage ,
     recoverpassword ,
     getUsers ,
     dailyReport ,
-    getCustomerFeedback ,
+    getCustomerFeedback,
     getmarketdetails,Trip,
-    createDriver,getres,getUserByToken
+    createDriver,getres,getUserByToken,loginPage
 } from "../controllers/user-controller.js"
+
 
 
 
@@ -26,7 +24,6 @@ router.route('/api/:phonenumber').get(getUsers);
 router.route('/').get(getres);
 
 router.route('/signup').post(signup);
-
 
 router.route('/image').get(getimage);
 
@@ -46,8 +43,16 @@ router.route('/api/getmarketdetails').post(getmarketdetails);
 
 router.route('/api/trip').post(Trip);
 
-router.use(Authcheck);
+// router.use(checkAuth);
 
 router.route('/login').post(login)
 
+// router.route('/api/loginWeb').get(weblogin); 
+
+router.route('/api/login').get(loginPage);
+
+
+
+
 export default router
+

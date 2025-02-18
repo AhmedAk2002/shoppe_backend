@@ -1,8 +1,8 @@
 import {validationResult} from "express-validator"
 import bcrypt from "bcryptjs";
-import cilad from "../models/Httperror.js"
+import {HttpError} from "../models/Httperror.js"
 import jwt from "jsonwebtoken"
-import generateOtp from "../middleware/OTP.js"
+import { generateOtp } from "../middleware/OTP.js"
 import path from 'path'
 import User from "../models/user.js"
 import feedbacks from "../models/customerFeedback.js"
@@ -18,7 +18,7 @@ const otp = generateOtp();
 
 export const getimage = async (req, res, next) => {
     // Use path.join for a consistent absolute path
-    const imagePath = path.join('C:/Users/E-AhmedMoha-M-APP/downloads', 'prime.jpg');
+    const imagePath = path.join('C:/Users/E-AhmedMoha-M-APP/downloads', 'prime.png');
 
     // Use res.sendFile with an absolute path
     res.sendFile(imagePath, (err) => {
@@ -86,89 +86,190 @@ export const getUsers = async (req, res, next) => {
 
 
 // Sign up a new user
-export const signup = async (req, res, next) => {
-    const errors = validationResult(req);
+// for android
+// export const signup = async (req, res, next) => {
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//         return next(new HttpError("No valid data passed, update error", 422));
+//     }
    
 
-    const { name, phonenumber, email, password, money ,referred , transections , inactive } = req.body;
+//     const { name, phonenumber, email, password, money ,referred , transections , inactive } = req.body;
+
+//     let existUser;
+//     try {
+//         existUser = await User.findOne({ email: email });
+//     } catch (err) {
+//         console.error("Error checking existing user:", err);
+//         return res.json({
+//             success: false,
+//             ErrorHandler: ErrorHandler.SIGNUP_FAILED
+        
+//         });
+//     }
+    
+        
+//     if (existUser) {
+//         return res.json({
+//             success: false,
+//             ErrorHandler: ErrorHandler.USER_EXIST
+            
+//         });
+//     };
+
+//     // Validate email format
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     if (!emailRegex.test(email)) {
+//         const error = new HttpError("Email is not valid", 422);
+//         return next(error);
+//     }
+
+//     // Validate phone number length
+//     if (phonenumber.length !== 9) {
+//         const error = new HttpError("Phone number is not valid", 422);
+//         return next(error);
+//     }
+
+//     let hashedPassword;
+//     try {
+//         hashedPassword = await bcrypt.hash(password, 12);
+//     } catch (err) {
+//         const error = new HttpError("Could not create user, try again later", 500);
+//         console.error("Error during password hashing:", err);
+//         return next(error);
+//     }
+   
+ 
+//     // Default money
+//     const Money = money || 1400;
+//     const ref = referred || 2;
+//     const Transaction = transections || 2;
+//     const Active = inactive || 2;
+
+
+//     const createdUser = new User({
+//         name,
+//         phonenumber,
+//         email,
+//         password: hashedPassword,
+//         money: Money,
+//         transections : Transaction,
+//         inactive : Active,
+//         referred : ref,
+    
+    
+//     });
+
+//     try {
+//         await createdUser.save();
+//     } catch (err) {
+//         console.error("Error saving user to database:", err.message, err);
+//         return res.json({
+//             success: false,
+//             ErrorHandler: ErrorHandler.SIGNUP_FAILED
+            
+//         });
+//     };
+    
+
+//     let token;
+//     try {
+//         const jwtSecret = process.env.JWT_SECRET || 'defaultsecret';
+//         token = jwt.sign({ userId: createdUser.id, email: createdUser.email }, jwtSecret, { expiresIn: '3h' });
+//         createdUser.token = token; // Assign token to user object
+//         await createdUser.save(); // Save the updated user
+//         // console.log("Generated Token:", token);
+
+//     } catch (err) {
+//         console.error("Error generating token:", err);
+//          return res.json({
+//             success: false,
+//             ErrorHandler: ErrorHandler.ERROR_GENERATING_TOKEN
+            
+//         });
+//     };
+    
+
+//     res.status(201).json({
+//         message: "User created successfully",
+//         otp : otp
+        
+//     });
+// };
+
+export const signup = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({
+            success: false,
+            message: "No valid data passed, update error"
+        });
+    }
+
+    const { name, email, password } = req.body;
+    console.log("Received data:", req.body);
+
 
     let existUser;
     try {
         existUser = await User.findOne({ email: email });
     } catch (err) {
         console.error("Error checking existing user:", err);
-        return res.json({
+        return res.status(500).json({
             success: false,
-            ErrorHandler: ErrorHandler.SIGNUP_FAILED
-        
+            message: "Error checking user existence"
         });
     }
-    
-        
+
+    // Immediately return if name is missing
+    if (!name) {
+        return res.status(400).json({
+            success: false,
+            message: "Name is required"
+        });
+    }
 
     if (existUser) {
-        return res.json({
+        return res.status(400).json({
             success: false,
-            ErrorHandler: ErrorHandler.USER_EXIST
-            
+            message: "User already exists"
         });
-    };
+    }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        const error = new cilad("Email is not valid", 422);
-        return next(error);
-    }
+    const error = new HttpError("Email is not valid", 422);
+    return next(error);
+}
 
-    // Validate phone number length
-    if (phonenumber.length !== 9) {
-        const error = new cilad("Phone number is not valid", 422);
-        return next(error);
-    }
 
     let hashedPassword;
     try {
         hashedPassword = await bcrypt.hash(password, 12);
     } catch (err) {
-        const error = new cilad("Could not create user, try again later", 500);
         console.error("Error during password hashing:", err);
-        return next(error);
+        return res.status(500).json({
+            success: false,
+            message: "Could not create user, try again later"
+        });
     }
-   
- 
-    // Default money
-    const Money = money || 1400;
-    const ref = referred || 2;
-    const Transaction = transections || 2;
-    const Active = inactive || 2;
-
 
     const createdUser = new User({
-        name,
-        phonenumber,
         email,
         password: hashedPassword,
-        money: Money,
-        transections : Transaction,
-        inactive : Active,
-        referred : ref,
-    
-        
-
+        name
     });
 
     try {
         await createdUser.save();
     } catch (err) {
         console.error("Error saving user to database:", err.message, err);
-        return res.json({
+        return res.status(500).json({
             success: false,
-            ErrorHandler: ErrorHandler.SIGNUP_FAILED
-            
+            message: "Error saving user to database"
         });
-    };
-    
+    }
 
     let token;
     try {
@@ -176,114 +277,90 @@ export const signup = async (req, res, next) => {
         token = jwt.sign({ userId: createdUser.id, email: createdUser.email }, jwtSecret, { expiresIn: '3h' });
         createdUser.token = token; // Assign token to user object
         await createdUser.save(); // Save the updated user
-        // console.log("Generated Token:", token);
-
     } catch (err) {
         console.error("Error generating token:", err);
-         return res.json({
+        return res.status(500).json({
             success: false,
-            ErrorHandler: ErrorHandler.ERROR_GENERATING_TOKEN
-            
+            message: "Error generating token"
         });
-    };
-    
+    }
 
     res.status(201).json({
+        success: true,
         message: "User created successfully",
-        otp : otp
-        
+        token: token // Return the token as part of the response
     });
 };
 
 
+// for the android
 // Log in a user
-export const login = async (req, res, next) => {
-    const { email, phonenumber, password } = req.body;
-    const error = validationResult(req);
-    
-    // console.log(req.body);
+// export const login = async (req, res, next) => {
+//     const { email, phonenumber, password } = req.body;
+//     const error = validationResult(req);
+//     if (!error.isEmpty()) {
+//         return next(new HttpError("No valid data passed, update error", 422));
+//     }
+// for the web
 
-    // Log the input received from the frontend
-    // console.log("Email from request:", email);
-    // console.log("Phone number from request:", phonenumber);
-    // console.log("Password from request:", password);
 
-    let existingUser;
+export const login = async (req, res) => {
+    const { email, password } = req.body;
+
     try {
-        // Find the user by email
-        existingUser = await User.findOne({ email: email });
-        if(!existingUser || existingUser == null){
-            return res.json({
-                success: false,
-                ErrorHandler: ErrorHandler.USER_NAME_NOT_FOUND
-            });
-        };
+        // Find user by email
+        const existingUser = await User.findOne({ email });
 
-        // Verify phone number
-        if (existingUser.phonenumber !== phonenumber) {
+        if (!existingUser) {
             return res.status(401).json({
                 success: false,
-                ErrorHandler: ErrorHandler.INVALID_PHONENUMBER
-                
+                message: "User not found"
             });
-        };
-
-        // Compare the password
-        const isValidPassword = await bcrypt.compare(password, existingUser.password);
-
-        // Log the password comparison result
-        // console.log("Password comparison result:", isValidPassword);
-
-        
-
-        // Generate token
-        let token;
-        try {
-            const jwtSecret = process.env.JWT_SECRET || 'defaultsecret';
-            token = jwt.sign(
-                { userId: existingUser.id, email: existingUser.email },
-                jwtSecret,
-                // { expiresIn: '3h' }
-            );
-            existingUser.token = token; // Assign token to the user object
-            // console.log("Token from request:", token);
-
-            if (!isValidPassword) {
-                return res.status(401).json({
-                    success: false,
-                    ErrorHandler: ErrorHandler.USER_PASSWORD_INCORRECT
-                    
-                })
-            }
-            if (!error.isEmpty()) {
-                return res.status(401).json({
-                    success: false,
-                    ErrorHandler: ErrorHandler.REQUEST_IS_EMPTY
-                    
-                });
-            }
-
-            // Optionally save the updated user (if you need to persist the token)
-            await existingUser.save();
-        } catch (err) {
-            return res.status(401).json({
-                success: false,
-                ErrorHandler: ErrorHandler.USER_EXIST
-                
-            })
         }
 
-        // Send success response
-        res.status(200).json({
+        // Verify phone number
+        // if (existingUser.phonenumber !== phonenumber) {
+        //     return res.status(401).json({
+        //         success: false,
+        //         message: "Invalid phone number"
+        //     });
+        // }
+
+        // Compare hashed password
+        const isValidPassword = await bcrypt.compare(password, existingUser.password);
+        if (!isValidPassword) {
+            return res.status(401).json({
+                success: false,
+                message: "Incorrect password"
+            });
+        }
+
+        // Generate JWT Token
+        const jwtSecret = process.env.JWT_SECRET || 'defaultsecret';
+        const token = jwt.sign(
+            { userId: existingUser.id, email: existingUser.email },
+            jwtSecret,
+            { expiresIn: '3h' }
+        );
+
+        // Send success response with token
+        return res.status(200).json({
+            success: true,
             message: "Login successful",
-            user : existingUser
+            user: { 
+                id: existingUser.id, 
+                email: existingUser.email, 
+                phonenumber: existingUser.phonenumber 
+            },
+            token
         });
+
     } catch (error) {
-        return res.status(401).json({
+        console.error("Login Error:", error);
+        return res.status(500).json({
             success: false,
-            ErrorHandler: ErrorHandler.LOGIN_FAILED
-            
-        })
+            message: "Server error"
+        });
     }
 };
 
@@ -291,7 +368,9 @@ export const login = async (req, res, next) => {
 
 export const recoverpassword = async (req, res, next) => {
     const error = validationResult(req);
-
+    if (!error.isEmpty()) {
+        return next(new HttpError("No valid data passed, update error", 422));
+    }
     
 
     const { email, password } = req.body;
@@ -378,8 +457,9 @@ export const recoverpassword = async (req, res, next) => {
 
 export const editprofile = async (req, res, next) => {
     const error = validationResult(req);
-
-    
+    if (!error.isEmpty()) {
+        return next(new HttpError("No valid data passed, update error", 422));
+    }
 
     const { email, name } = req.body;
 
@@ -431,6 +511,9 @@ export const editprofile = async (req, res, next) => {
 export const generateOtpController = async (req, res, next) => {
     try {
       const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(new HttpError("No valid data passed, update error", 422));
+    }
      
       const { phonenumber } = req.body;
   
@@ -440,6 +523,7 @@ export const generateOtpController = async (req, res, next) => {
             ErrorHandler: ErrorHandler.USER_PHONE_NUMBER_REQUIRE
             
         });
+        
     };
   
       let existingUser;
@@ -448,7 +532,7 @@ export const generateOtpController = async (req, res, next) => {
       } catch (err) {
         return res.json({
             success: false,
-            ErrorHandler: ErrorHandler.SIGNUP_FAILED
+            ErrorHandler: ErrorHandler.LOGIN_FAILED_FAILED
             
         });
     };
@@ -460,11 +544,20 @@ export const generateOtpController = async (req, res, next) => {
             
         });
     };
+    if(existingUser.phonenumber != phonenumber){
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.WRONG_PHONENUMBER
+           
+            
+        });
+
+    }
       
   
 
     //   if(existingUser){
-    //     const error = new cilad("User already exists, log in instead", 422);
+    //     const error = new HttpError("User already exists, log in instead", 422);
     //     return next(error);
     //   }
   
@@ -523,7 +616,7 @@ export const getres = async (req, res, next) => {
     
 //         // Check if the provided phone number matches the allowed number
 //         if (!allowedPhoneNumbers.includes(phonenumber)) {
-//             return next(new cilad("Phone number not allowed", 403));
+//             return next(new HttpError("Phone number not allowed", 403));
 //         }
 
 //         // Find the user by phone number
@@ -555,6 +648,9 @@ export const getres = async (req, res, next) => {
 
 export const createDriver = async (req, res, next) => {
     const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(new HttpError("No valid data passed, update error", 422));
+    }
     
 
     const { name, phonenumber, tarigo, description, image, type } = req.body;
@@ -582,7 +678,7 @@ export const createDriver = async (req, res, next) => {
     }
 
     if (existingDriver) {
-        return next(new cilad("Driver with this phone number already exists.", 422));
+        return next(new HttpError("Driver with this phone number already exists.", 422));
     }
 
     // Create the new driver
@@ -600,15 +696,17 @@ export const createDriver = async (req, res, next) => {
         res.status(201).json({ message: "Driver created successfully", driver: createdDriver });
     } catch (err) {
         console.error("Error saving driver:", err);
-        return next(new cilad("Creating driver failed, please try again later.", 500));
+        return next(new HttpError("Creating driver failed, please try again later.", 500));
     }
     
 };
 
-
 export const dailyReport = async (req, res, next) => {
     try {
         const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return next(new HttpError("No valid data passed, update error", 422));
+        }
       
         const { phonenumber } = req.body;
     
@@ -622,7 +720,6 @@ export const dailyReport = async (req, res, next) => {
     
         const allowedPhoneNumbers = ["615880177"]; 
         
-    
         // Check if the provided phone number matches the allowed number
         if (!allowedPhoneNumbers.includes(phonenumber)) {
             return res.json({
@@ -645,11 +742,14 @@ export const dailyReport = async (req, res, next) => {
             message: "Internal Server Error.",
     
         });
-    }
+    }     
 }
 
 export const getCustomerFeedback = async (req, res, next) => {
     const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(new HttpError("No valid data passed, update error", 422));
+    }
    
 
     const { title, message, phonenumber } = req.body;
@@ -664,7 +764,7 @@ export const getCustomerFeedback = async (req, res, next) => {
             });
         }
         // if (!id) {
-        //     return next(new cilad("Marketter ID is required", 400));
+        //     return next(new HttpError("Marketter ID is required", 400));
         // }
         if (!message) {
             return res.status(400).json({
@@ -691,7 +791,7 @@ export const getCustomerFeedback = async (req, res, next) => {
         }   
         
         // if (!allowedIds.includes(id)) {
-        //     return next(new cilad("Marketter ID not allowed", 403));
+        //     return next(new HttpError("Marketter ID not allowed", 403));
         // }
         // Create a new customer feedback
         const createdFeedback = new feedbacks({
@@ -729,7 +829,9 @@ export const getCustomerFeedback = async (req, res, next) => {
 };
 export const getmarketdetails = async (req, res, next) => {
     const errors = validationResult(req);
-    
+    if (!errors.isEmpty()) {
+        return next(new HttpError("No valid data passed, update error", 422));
+    }
 
     const { id } = req.body;
 
@@ -824,13 +926,13 @@ try{
     }
 
     if(!phonenumber){
-        return next(new cilad("phone required", 403));
+        return next(new HttpError("phone required", 403));
     };
     if(!destnation){
-        return next(new cilad("destnation required", 403));
+        return next(new HttpError("destnation required", 403));
     };
     if(!location){
-        return next(new cilad("location required", 403));
+        return next(new HttpError("location required", 403));
     };
 
 
@@ -860,6 +962,9 @@ try{
 
 export const getUserByToken = async (req, res, next) => {
     const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(new HttpError("No valid data passed, update error", 422));
+    }
     
 
     const {token} = req.body;
@@ -903,3 +1008,20 @@ export const getUserByToken = async (req, res, next) => {
         });
     }
 }
+export const weblogin = async(req,rs,next)=>{
+    r
+}
+
+export const loginPage = async (req, res) => {
+    const __filename = fileURLToPath(import.meta.url);  // Current file's URL converted to path
+    const __dirname = dirname(__filename);  // Directory name of the current file
+    const filePath = path.join(__dirname, 'views', 'index.html');  // Absolute path to the HTML file
+    
+    // Send the HTML file
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            console.error("File not found:", err);
+            res.status(404).send("File Not Found");
+        }
+    });
+};

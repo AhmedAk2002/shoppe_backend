@@ -28,7 +28,12 @@ export const ERROR_CODE = {
     FETCHING_MARKET_DETAILS_FAILED:(500,"Error fetching market"),
     CREATING_TRIP_FAILED:(500,"creating trip failed."),
     TOKEN_REQUIRE:(422,"Token require"),
-    FETCHING_USER_BY_TOKEN:(500,"Eroor fretchign user by token")
+    FETCHING_USER_BY_TOKEN:(500,"Eroor fretchign user by token"),
+    LOGIN_FAILED_FAILED:(500,"ERROR login IN"),
+    WRONG_PHONENUMBER:(500,"Wrong number"),
+    WRONG_EMAIL:(500,"Wrong email"),
+    USER_NAME_REQUUIRED:(422,"Name required"),
+
 
 
 

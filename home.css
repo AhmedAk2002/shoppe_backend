@@ -1,0 +1,418 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+/* AppBar Styles */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #3b3b3b;
+}
+
+.appbar {
+    margin-top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #000;
+    padding: 15px 20px;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    height: 70px;
+}
+
+
+/* Logo Styling */
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    display: block;
+}
+.appbar img {
+    height: 60px;  /* Adjust height as needed */
+    width: auto;   /* Keeps the correct aspect ratio */
+    max-width: 60px; /* Optional: Ensures it doesn't get too wide */
+    display: block;
+    object-fit: contain; /* Prevents distortion */
+    fill: #ffffff;
+}
+
+/* sidebar Links */
+.nav-links {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin-left: 22px;
+    font-size: 18px;
+    flex-wrap: nowrap;  /* Prevent items from wrapping */
+
+}
+
+/* Spacing between sidebar items */
+.nav-links li {
+    margin-right: 15px;
+}
+
+/* Icon Styling */
+.nav-links .logout {
+    display: flex; /* Use flex to align items horizontally */
+    align-items: center; /* Vertically center the icon and text */
+    font-size: 18px; /* Adjust the font size for the text */
+}
+
+.nav-links .logout ion-icon {
+    font-size: 24px; /* Icon size */
+    margin-right: 8px; /* Space between the icon and text */
+    cursor: pointer;
+}
+
+.nav-links .logout:hover, nav a:focus {
+    color: red; /* Change color on hover */
+    background: none; /* Remove any background color */
+    outline: none; /* Remove default focus outline */
+}
+
+
+
+/* Adjust the logout link color */
+.nav-links a {
+    text-decoration: none;
+    color: white;
+}
+
+.menu-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nav-links .menu ion-icon {
+    position: absolute; /* Keeps it in place */
+    top: 50%; /* Centers vertically */
+    left: 135px; /* Adjust as needed to place it next to the scrollbar */
+    transform: translateY(-50%); /* Ensures proper vertical alignment */
+    font-size: 24px;
+    z-index: 1100; /* Ensures it stays above other elements */
+ 
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+    position: fixed; /* Keeps it fixed */
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 130px;
+    margin-top: 60px;
+    padding-top: 20px;
+    align-items: start;
+    overflow-y: auto;
+    scrollbar-width: none;
+    transition: transform 0.3s ease-in-out; /* Smooth slide effect */
+    transform: translateX(0); /* Visible on page load */
+
+}
+
+.sidebar.active {
+    transform: translateX(-109%); 
+}
+
+/* Menu icon */
+.menu {
+    margin-left: 0; /* Ensure no unwanted left margin */
+    font-size: 24px;
+    cursor: pointer;
+    color: rgb(252, 252, 252);
+    background-color: #14A085; /* Green color */
+    width: 50px; /* Adjust width */
+    height: 40px; /* Adjust height */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth transition */
+    /* Flexbox to center icon properly */
+    display: flex;
+    align-items: center; /* Centers vertically */
+    justify-content: center; /* Centers horizontally */
+    margin-right: auto;
+    margin-left: 30px;
+}
+
+/* Icon inside menu */
+.menu i {
+    font-size: 24px;
+    color: white;
+    margin: 0; /* Remove any extra space */
+    padding: 0;
+}
+
+/* Hover effect */
+.menu:hover {
+    background-color: #16B293; /* Slightly lighter green */
+}
+
+/* Click effect */
+.menu:active {
+    background-color: #12836F; /* Darker green for click effect */
+}
+
+
+
+
+
+.sidebar a::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 3px;
+    /* background: #fff9f9; */
+    border-radius: 5px;
+    transform: scaleX(0);
+    transition: transform .5s ease-in-out;
+}
+
+.sidebar a:hover::after {
+    transform: scaleX(1);
+    
+}
+nav a {
+    text-decoration: none;
+    color: black;
+    padding: 10px;
+    transition: 0.3s;
+    
+}
+
+nav a:hover, nav a:focus {
+    color: red; /* Change color on hover */
+    background: none; /* Remove any background color */
+    outline: none; /* Remove default focus outline */
+}
+
+nav a:active {
+    background: none; /* Remove box color on click */
+    outline: none; /* Remove focus border */
+}
+
+nav a.active {
+    color: blue; /* Selected item color */
+    font-weight: bold;
+    background: none; /* Remove any unwanted background */
+}
+
+
+body {
+    margin-left: 220px; /* Same as the sidebar width */
+}
+
+        /* Scrollable Navbar */
+        .nav-wrapper {
+            width: 9%;
+            overflow-x: auto; /* Enables horizontal scrolling */
+            white-space: nowrap; /* Prevents items from wrapping */
+            background: #ffffff;
+        }
+
+        .sidebar {
+            display: flex;
+            padding: 10px 0;
+            align-items: right;
+            gap: 20px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            padding: 10px 10px;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background: #444;
+            border-radius: px;
+        }
+
+        /* Custom Scrollbar */
+        .nav-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .nav-wrapper::-webkit-scrollbar-track {
+            background: #333;
+        }
+
+        .nav-wrapper::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .nav-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        @media (max-width: 539px) {
+            .sidebar {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                background: #333;
+                text-align: center;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+        
+            .nav-links li {
+                margin: 15px 0;
+            }
+        
+            .menu-toggle {
+                display: block;
+            }
+        
+            /* Hide Logo on smaller screens */
+            .appbar .logo {
+                display: none;
+            }
+        
+        
+            /* Ensure the menu icon stays visible and on the left */
+            .nav-links .menu ion-icon {
+                position: absolute;
+                top: 50%;  /* Centers it vertically */
+                left: 40px;  /* Keeps it on the left next to the scrollbar */
+                transform: translateY(-50%);  /* Corrects the vertical alignment */
+                font-size: 24px;
+                z-index: 1100;  /* Keeps it above other elements */
+            }
+            .nav-links li {
+            margin-right: 15px;
+            }
+
+            /* Icon Styling */
+            .nav-links .logout ion-icon {
+            font-size: 24px;
+            margin-left: 8px;
+            margin-top: 9px;
+            margin-bottom: 9px;
+            
+
+    
+             }
+             .sidebar {
+                display: flex;
+                flex-direction: column;
+                background-color: black;
+                position: fixed; /* Keeps it fixed */
+                left: 0;
+                top: 0;
+                height: 100vh;
+                width: 130px;
+                padding-top: 20px;
+                align-items: start;
+                overflow-y: auto;
+                scrollbar-width: none;
+                transition: transform 0.3s ease-in-out; /* Smooth slide effect */
+                transform: translateX(-109%); /* Start hidden */
+            }
+            
+            .sidebar.active {
+                transform: translateX(0); /* Slide in when active */
+            }
+            
+            .menu {
+                font-size: 24px;
+                cursor: pointer;
+                color: black;
+            }
+
+            .appbar img {
+                height: 50px;  /* Set default height */
+                width: auto;
+                max-width: 150px;
+                display: none;
+                object-fit: contain;
+                /* Add transition for smooth effect */
+                transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            }
+            .menu {
+                margin-left: 0; /* No extra left margin */
+                font-size: 24px;
+                cursor: pointer;
+                color: rgb(252, 252, 252);
+                background-color: #14A085; /* Green color */
+                width: 50px; /* Set a fixed width */
+                min-width: 10px; /* Prevent it from shrinking below 100px */
+                flex-shrink: 0;   /* Prevent shrinking in a flex container */
+            }
+            
+            
+        }
+
+        /* Custom Alert Styling */
+.custom-alert {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 20px;
+    left: 50%; /* Move to center */
+    transform: translateX(-50%);
+    background-color: #080808;
+    color: white;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-width: 300px;
+    width: auto;
+    text-align: center;
+    transition: top 0.5s ease-in-out; /* Smooth transition */
+}
+
+/* Close button styling */
+.close-alert {
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.close-alert:hover {
+    color: #ccc;
+}
+
+.custom-alert.success {
+    background-color: #4CAF50; /* Green background for success */
+}
+
+.custom-alert.error {
+    background-color: #f44336; /* Red background for errors */
+}
+
+/* Show alert by changing top position */
+.custom-alert.show {
+    top: 20px; /* Move into view */
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Manage Table</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h2 class="logo">Manage Table</h2>
+
+    <!-- Table -->
+    <table class="tabledata" id="dataTable">
+        <thead>
+            <tr>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Table rows will go here -->
+        </tbody>
+    </table>
+    
+    <!-- Add New Row Form -->
+    <div class="form-container">
+        <input type="text" id="name" placeholder="Enter Name" />
+        <input type="email" id="email" placeholder="Enter Email" />
+        <button class="btn add-btn" onclick="addRow()">Add Row</button>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

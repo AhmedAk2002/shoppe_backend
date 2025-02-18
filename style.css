@@ -1,0 +1,356 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: url(background.jpg) no-repeat center/cover;
+}
+
+/* Header */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 99;
+}
+
+.logo {
+    font-size: 2em;
+    color: #fff;
+    user-select: none;
+}
+
+.navigation a {
+    position: relative;
+    font-size: 1.1em;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 40px;
+}
+
+.navigation a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 3px;
+    background: #fff;
+    border-radius: 5px;
+    transform: scaleX(0);
+    transition: transform .5s ease-in-out;
+}
+
+.navigation a:hover::after {
+    transform: scaleX(1);
+}
+
+/* Login Button */
+.navigation .btnLogin-popup {
+    width: 100px;
+    height: 46px;
+    background: transparent;
+    border: 2px solid #fff;
+    outline: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 500;
+    margin-left: 40px;
+    transition: 0.3s ease;
+}
+
+.navigation .btnLogin-popup:hover {
+    background: #fff;
+    color: #000;
+}
+
+/* Login Form */
+.wrapper {
+    position: relative;
+    width: 400px;
+    height: 440px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px; /* Ensures it doesn't overlap with header */
+    overflow: hidden;
+    transform: scale(0);
+    transition: 2s ease , height .2s ease; /* Smooth label movement */
+
+}
+
+.wrapper.active-popup{
+    transform: scale(1);
+
+}
+
+
+
+.wrapper .form-box.login {
+    transition: transform .27s ease-in-out;
+    transform: translateX(0);
+}
+
+.wrapper.active .form-box.login{
+    transition: none;
+    transform: translateX(-400px);
+}
+
+.wrapper.active .form-box.Register{
+    transition: transform .27s ease-in-out;
+    transform: translateX(0);
+}
+
+.wrapper .form-box.Register {
+    position: absolute;
+    transition: none;
+    transform: translateX(400px); 
+    
+}
+.wrapper.active{
+    height: 520px;
+}
+
+.wrapper .form-box {
+    width: 100%;
+    padding: 40px;
+}
+
+/* .wrapper .form-box .{
+    position: absolute;
+    transform: translateX(400px)
+} */
+
+.form-box h2 {
+    font-size: 2em;
+    color: #fafafa;
+    text-align: center;
+}
+
+/* Input Fields */
+.input-box {
+    position: relative;
+    width: 100%;
+    margin: 30px 0;
+}
+
+.input-box input {
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #fff;
+    outline: none;
+    font-size: 1em;
+    color: #fff;
+    padding: 0 10px;
+}
+
+.input-box label {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    color: #ccc;
+    font-weight: 500;
+    pointer-events: none;
+    transition: 0.3s ease;
+}
+
+/* Move label up when input is focused or has value */
+.input-box input:focus ~ label,
+.input-box input:focus ~ label,
+.input-box input:valid ~ label,
+.input-box input:not(:placeholder-shown) ~ label {
+    top: -10px;
+    font-size: 0.9em;
+    color: #fff;
+}
+
+.input-box .email {
+    position: absolute;
+    right: 10px;
+    color: #fff;
+    font-size: 1.2em;
+    line-height: 50px;
+}
+.input-box .password {
+    position: absolute;
+    right: 10px;
+    color: #fff;
+    font-size: 1.2em;
+    line-height: 50px;
+}
+.input-box .icon {
+    position: absolute;
+    right: 10px;
+    color: #fff;
+    font-size: 1.2em;
+    line-height: 50px;
+}
+
+/* Remember & Forgot Password */
+.remember-forget {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.remember-forget label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.remember-forget a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.remember-forget a:hover {
+    text-decoration: underline;
+}
+
+/* Login Button */
+.btn {
+    width: 100%;
+    height: 45px;
+    background: #000000;
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #ffffff;
+    font-weight: bold;
+    transition: 0.3s ease-in-out;
+}
+
+.btn:hover {
+    background: #ffffff;
+    color: #000;
+}
+
+/* close */
+.wrapper .icon-close{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 35px;
+    height: 45px;
+    background-color: #000;
+    font-size: 1cm;
+    color: #ffffff;
+    justify-content: center;
+    align-items: center;
+    border-bottom-left-radius: 20px;
+    cursor: pointer;
+    z-index: 2;
+    
+  
+
+}
+
+/* Register Link */
+.login-register {
+    text-align: center;
+    font-size: 0.9em;
+    color: #ccc;
+    margin-top: 20px;
+}
+
+.login-register a {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-register a:hover {
+    text-decoration: underline;
+}
+
+
+/* Custom Alert Styling */
+.custom-alert {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 20px;
+    left: 50%; /* Move to center */
+    transform: translateX(-50%);
+    background-color: #f44336;
+    color: white;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-width: 300px;
+    width: 100%;
+    text-align: center;
+    transition: top 0.5s ease-in-out; /* Smooth transition */
+}
+
+/* Close button styling */
+.close-alert {
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.close-alert:hover {
+    color: #ccc;
+}
+
+.custom-alert.success {
+    background-color: #4CAF50; /* Green background for success */
+}
+
+.custom-alert.error {
+    background-color: #f44336; /* Red background for errors */
+}
+
+/* Show alert by changing top position */
+.custom-alert.show {
+    top: 20px; /* Move into view */
+}
+
+
+
+
+
+
+
+
+
+

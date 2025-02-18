@@ -1,4 +1,4 @@
-const generateOtp = function (length) {
+export const generateOtp = function (length) {
     try {
       if (typeof length === "undefined") length = 4;
       var otpCode = "";
@@ -11,7 +11,6 @@ const generateOtp = function (length) {
     
     }
   };
-export default generateOtp
 // xaraf
 // function generateAlphanumericOtp(length = 6) {
 //     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
