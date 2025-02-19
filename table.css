@@ -6,60 +6,254 @@
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
-/* AppBar Styles */
+
+/* Body Styles */
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 20px;
-    text-align: center;
-    background-color: #1b1b1b;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background-color: #727070;
+    flex-direction: column; /* Ensure header is at the top */
 }
 
+/* Header Styles */
+header {
+    background-color: #000000;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    height: 70px;
+}
+
+header .menu {
+    font-size: 24px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: white;
+    width: 50px;
+    height: 40px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+header .menu:hover {
+    background-color: #ffffff;
+    color: #007BFF;
+}
+
+header .menu:active {
+    background-color: #ffffff;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+    position: fixed; /* Keeps it fixed */
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 130px;
+    margin-top: 60px;
+    padding-top: 20px;
+    align-items: start;
+    overflow-y: auto;
+    scrollbar-width: none;
+    transition: transform 0.3s ease-in-out; /* Smooth slide effect */
+    transform: translateX(0); /* Visible on page load */
+}
+
+.sidebar.active {
+    transform: translateX(-109%);
+}
+
+.sidebar.active ~ .menu-container .menu {
+    transform: translateX(-130px); /* Move menu to the left when sidebar is hidden */
+}
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2em;
+    padding: 10px 10px;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background: #444;
+    border-radius: px;
+}
+
+.sidebar a::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 3px;
+    /* background: #fff9f9; */
+    border-radius: 5px;
+    transform: scaleX(0);
+    transition: transform .5s ease-in-out;
+}
+
+.sidebar a:hover::after {
+    transform: scaleX(1);
+}
+
+nav a {
+    text-decoration: none;
+    color: black;
+    padding: 10px;
+    transition: 0.3s;
+}
+
+nav a:hover, nav a:focus {
+    color: rgb(4, 0, 255); /* Change color on hover */
+    background: none; /* Remove any background color */
+    outline: none; /* Remove default focus outline */
+}
+
+nav a:active {
+    background: none; /* Remove box color on click */
+    outline: none; /* Remove focus border */
+}
+
+nav a.active {
+    color: blue; /* Selected item color */
+    font-weight: bold;
+    background: none; /* Remove any unwanted background */
+}
+
+/* Main Content Styles */
+.main-content {
+    margin-left: 150px; /* Adjust to match sidebar width */
+    padding: 20px;
+    width: calc(100% - 150px); /* Adjust to match sidebar width */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Ensure it takes up remaining space */
+    margin-top: 70px; /* Adjust to be below the header */
+}
+
+/* Heading Styles */
 h2 {
     margin-bottom: 20px;
+    color: #333;
 }
 
+/* Table Styles */
 .tabledata {
-    width: 100%;
+    width: 100%; /* Make table fit to the screen */
     border-collapse: collapse;
     background: white;
     margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .tabledata th, .tabledata td {
     border: 1px solid #ddd;
-    padding: 10px;
+    padding: 12px 15px;
     text-align: left;
 }
 
-th {
+.tabledata th {
     background: #007BFF;
     color: white;
+    text-transform: uppercase;
+    font-weight: 600;
 }
 
-td {
+.tabledata td {
     font-size: 14px;
+    color: #555;
 }
 
+.tabledata tr:nth-child(even) {
+    background-color: #f1f1f1;
+}
+
+/* Combine name and email in one column */
+.tabledata .name-email {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Form Container Styles */
 .form-container {
+    width: 100%; /* Make form container fit to the screen */
     margin-bottom: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: row; /* Use row to align items horizontally */
+    align-items: center; /* Align items vertically in the center */
+    gap: 10px; /* Add space between elements */
+    position: relative; /* Ensure the button stays in place */
 }
 
+.form-container input {
+    flex: 1; /* Allow inputs to take equal space */
+    min-width: 150px; /* Prevent shrinking too much */
+    padding: 8px;
+}
+
+.form-container button {
+    padding: 8px 15px;
+    white-space: nowrap; /* Prevent the button text from breaking */
+}
+
+/* Input Styles */
 input {
     padding: 10px;
     margin: 5px;
     width: 200px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s;
 }
 
+input:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+/* Button Styles */
 .btn {
     padding: 10px 15px;
     border: none;
     cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .add-btn {
     background: green;
     color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: auto; /* Push the button to the right */
+}
+
+.add-btn:hover {
+    background: darkgreen;
 }
 
 .delete-btn {
@@ -70,3 +264,174 @@ input {
     width: 100%;
 }
 
+.delete-btn:hover {
+    background: darkred;
+}
+
+/* Custom Alert Styling */
+.custom-alert {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 20px;
+    left: 50%; /* Move to center */
+    transform: translateX(-50%);
+    background-color: #f44336;
+    color: white;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-width: 300px;
+    width: 100%;
+    text-align: center;
+    transition: top 0.5s ease-in-out; /* Smooth transition */
+}
+
+/* Close button styling */
+.close-alert {
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.close-alert:hover {
+    color: #ccc;
+}
+
+.custom-alert.success {
+    background-color: #4CAF50; /* Green background for success */
+}
+
+.custom-alert.error {
+    background-color: #f44336; /* Red background for errors */
+}
+
+.custom-alert.show {
+    top: 20px; /* Move into view */
+}
+
+@media (max-width: 539px) {
+    .sidebar {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        background: #333;
+        text-align: center;
+    }
+    
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li {
+        margin: 15px 0;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    /* Hide Logo on smaller screens */
+    .appbar .logo {
+        display: none;
+    }
+
+    /* Ensure the menu icon stays visible and on the left */
+    .nav-links .menu ion-icon {
+        position: absolute;
+        top: 50%;  /* Centers it vertically */
+        left: 40px;  /* Keeps it on the left next to the scrollbar */
+        transform: translateY(-50%);  /* Corrects the vertical alignment */
+        font-size: 24px;
+        z-index: 1100;  /* Keeps it above other elements */
+    }
+
+    .nav-links li {
+        margin-right: 15px;
+    }
+
+    /* Icon Styling */
+    .nav-links .logout ion-icon {
+        font-size: 24px;
+        margin-left: 8px;
+        margin-top: 9px;
+        margin-bottom: 9px;
+    }
+
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        background-color: black;
+        position: fixed; /* Keeps it fixed */
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 130px;
+        padding-top: 20px;
+        align-items: start;
+        overflow-y: auto;
+        scrollbar-width: none;
+        transition: transform 0.3s ease-in-out; /* Smooth slide effect */
+        transform: translateX(-109%); /* Start hidden */
+    }
+    
+    .sidebar.active {
+        transform: translateX(0); /* Slide in when active */
+    }
+    
+    .menu {
+        font-size: 24px;
+        cursor: pointer;
+        color: black;
+    }
+
+    .appbar img {
+        height: 50px;  /* Set default height */
+        width: auto;
+        max-width: 150px;
+        display: none;
+        object-fit: contain;
+        /* Add transition for smooth effect */
+        transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+
+    .menu {
+        margin-left: 0; /* No extra left margin */
+        font-size: 24px;
+        cursor: pointer;
+        color: rgb(252, 252, 252);
+        background-color: #14A085; /* Green color */
+        width: 50px; /* Set a fixed width */
+        min-width: 10px; /* Prevent it from shrinking below 100px */
+        flex-shrink: 0;   /* Prevent shrinking in a flex container */
+    }
+
+    .form-container {
+        width: 100%; /* Make form container fit to the screen */
+        margin-bottom: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column; /* Use column to stack items vertically */
+        align-items: center; /* Center items horizontally */
+        gap: 10px; /* Add space between elements */
+        position: relative; /* Ensure the button stays in place */
+        transform: translateX(0); /* Reset transform */
+    }
+
+    .tabledata {
+        transform: translateX(0); /* Reset transform */
+    }
+}

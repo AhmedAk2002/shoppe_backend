@@ -46,7 +46,28 @@
     </div>
     
     <script>
-       
+        document.addEventListener('DOMContentLoaded', () => {
+            const closeAlertButton = document.querySelector('.close-alert');
+
+            function showCustomAlert(message, type = "error") {
+                const alertText = document.getElementById("alert-text"); // Get the message area
+                alertText.textContent = message; // Set the message content
+                const customAlert = document.getElementById("custom-alert"); // Get the custom alert container
+                customAlert.className = `custom-alert ${type} show`; // Show the alert with type
+                customAlert.style.display = "block"; // Ensure the alert is visible
+                setTimeout(() => {
+                    customAlert.classList.remove("show"); // Hide the alert after 3 seconds
+                    customAlert.style.display = "none"; // Hide the alert
+                }, 3000);
+            }
+
+            // Close alert when close button is clicked
+            closeAlertButton.addEventListener('click', () => {
+                const customAlert = document.getElementById("custom-alert");
+                customAlert.classList.remove("show");
+                customAlert.style.display = "none";
+            });
+        });
     </script>
 </body>
 </html>

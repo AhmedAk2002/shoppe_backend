@@ -3,6 +3,7 @@ const loginLink = document.querySelector('.login-link');
 const registerLink = document.querySelector('.register-link'); // Fixed camelCase
 const btnPopup = document.querySelector('.btnLogin-popup');
 const iconClose = document.querySelector('.icon-close');
+const closeAlertButton = document.querySelector('.close-alert');
 
 function showCustomAlert(message, type = "error") {
     const alertText = document.getElementById("alert-text"); // Get the message area
@@ -15,6 +16,13 @@ function showCustomAlert(message, type = "error") {
         customAlert.style.display = "none"; // Hide the alert
     }, 3000);
 }
+
+// Close alert when close button is clicked
+closeAlertButton.addEventListener('click', () => {
+    const customAlert = document.getElementById("custom-alert");
+    customAlert.classList.remove("show");
+    customAlert.style.display = "none";
+});
 
 // LOGIN FORM HANDLING
 document.getElementById("login-form").addEventListener("submit", async function(event) {
@@ -110,7 +118,6 @@ document.getElementById("Register-form").addEventListener("submit", async functi
         showCustomAlert("Server error. Please try again later.", "error");
     }
 });
-
 
 // Toggle Forms
 registerLink.addEventListener('click', () => {

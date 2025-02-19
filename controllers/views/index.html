@@ -38,9 +38,7 @@
                     <label><input type="checkbox"> Remember me</label>
                     <a href="#">Forgot password?</a>
                 </div>
-                <div class="btn">
                     <button type="submit" class="btn">Login</button>
-                </div>
                 <div class="login-register">
                     <p>Don't have an account? <a href="#" class="login-link">register</a></p>
                 </div>
@@ -69,9 +67,9 @@
                 <div class="Agree">
                     <label><input type="checkbox"> I agree to terms and conditions</label>
                 </div>
-                <div class="btn">
+            
                     <button type="submit" class="btn">Register</button>
-                </div>
+                
                 <div class="login-register">
                     <p>Already have an account? <a href="#" class="register-link">Login</a></p>
                 </div>
@@ -92,5 +90,28 @@
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
     <script src="script.js"></script>
+
+    <script>
+        const closeAlertButton = document.querySelector('.close-alert');
+
+        function showCustomAlert(message, type = "error") {
+            const alertText = document.getElementById("alert-text"); // Get the message area
+            alertText.textContent = message; // Set the message content
+            const customAlert = document.getElementById("custom-alert"); // Get the custom alert container
+            customAlert.className = `custom-alert ${type} show`; // Show the alert with type
+            customAlert.style.display = "block"; // Ensure the alert is visible
+            setTimeout(() => {
+                customAlert.classList.remove("show"); // Hide the alert after 3 seconds
+                customAlert.style.display = "none"; // Hide the alert
+            }, 3000);
+        }
+
+        // Close alert when close button is clicked
+        closeAlertButton.addEventListener('click', () => {
+            const customAlert = document.getElementById("custom-alert");
+            customAlert.classList.remove("show");
+            customAlert.style.display = "none";
+        });
+    </script>
 </body>
 </html>

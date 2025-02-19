@@ -15,13 +15,17 @@ menuIcon.addEventListener('click', () => {
     navWrapper.classList.toggle('active'); 
 });
 
-
+  if (home) {
+        home.addEventListener('click', () => {
+            window.location.href = "home.html";  // Redirect to home.html when clicked
+        });
+    }
 logoutElement.addEventListener('click', () => {
     window.location.href = "index.html";  // Redirect to index.html when clicked
 });
 
 tablePage.addEventListener('click', () => {
-    window.location.href = "tablePage.html";  // Redirect to index.html when clicked
+    window.location.href = "table.html";  // Redirect to index.html when clicked
 });
 
 // Function to show the custom alert

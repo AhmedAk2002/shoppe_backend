@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Table Example</title>
+    <link rel="stylesheet" href="/table.css">
+</head>
+<body>
+    <header class="appbar">
+        <span class="menu"><ion-icon name="menu-outline"></ion-icon></span>
+        </ul>
+    </header>
+
+    <div class="nav-wrapper">
+        <nav class="sidebar">
+            <a class="home" href="#">Home</a>
+            <a href="#">Services</a>
+            <a href="#">Products</a>
+            <a href="#">Portfolio</a>
+            <a href="#">Blog</a>
+            <a href="#">Gallery</a>
+            <a href="#">Contact</a>
+            <a href="#">Support</a>
+            <a href="#">Settings</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="form-container">
+            <input type="text" id="name" placeholder="Name">
+            <input type="text" id="email" placeholder="Email">
+            <button class="btn add-btn" onclick="addRow()">Add</button>
+        </div>
+        
+        <table class="tabledata">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- Rows will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Custom Alert -->
+    <div id="custom-alert" class="custom-alert">
+        <div class="alert-message">
+            <span id="alert-text"></span>
+            <button id="close-alert" class="close-alert">×</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTableData();
+        });
+
+        function addRow() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            if (name && email) {
+                const tableBody = document.getElementById('table-body');
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${name}</td>
+                    <td>${email}</td>
+                    <td><button class="btn delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                `;
+
+                tableBody.appendChild(row);
+                saveTableData();
+                showCustomAlert("Row added successfully!", "success");
+
+                // Clear input fields
+                document.getElementById('name').value = '';
+                document.getElementById('email').value = '';
+            } else {
+                showCustomAlert('Please fill in both fields.', "error");
+            }
+        }
+
+        function deleteRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            saveTableData();
+            showCustomAlert("Row deleted successfully!", "success");
+        }
+
+        function saveTableData() {
+            const tableBody = document.getElementById('table-body');
+            const rows = tableBody.querySelectorAll('tr');
+            const data = [];
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                data.push({
+                    name: cells[0].textContent,
+                    email: cells[1].textContent
+                });
+            });
+
+            localStorage.setItem('tableData', JSON.stringify(data));
+        }
+
+        function loadTableData() {
+            const data = JSON.parse(localStorage.getItem('tableData')) || [];
+            const tableBody = document.getElementById('table-body');
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.email}</td>
+                    <td><button class="btn delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        const closeAlertButton = document.querySelector('.close-alert');
+
+        function showCustomAlert(message, type = "error") {
+            const alertText = document.getElementById("alert-text"); // Get the message area
+            alertText.textContent = message; // Set the message content
+            const customAlert = document.getElementById("custom-alert"); // Get the custom alert container
+            customAlert.className = `custom-alert ${type} show`; // Show the alert with type
+            customAlert.style.display = "block"; // Ensure the alert is visible
+            setTimeout(() => {
+                customAlert.classList.remove("show"); // Hide the alert after 3 seconds
+                customAlert.style.display = "none"; // Hide the alert
+            }, 3000);
+        }
+
+        // Close alert when close button is clicked
+        closeAlertButton.addEventListener('click', () => {
+            const customAlert = document.getElementById("custom-alert");
+            customAlert.classList.remove("show");
+            customAlert.style.display = "none";
+        });
+
+        // Toggle sidebar visibility
+        const menuIcon = document.querySelector('.menu');
+        const sidebar = document.querySelector('.sidebar');
+
+        menuIcon.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+    </script>
+    <script src="table.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</body>
+</html>
