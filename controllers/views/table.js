@@ -1,5 +1,23 @@
 const home = document.querySelector('.home');
 const nav_links = document.querySelector('.nav-links');
+const menuIcon = document.querySelector('.menu');
+const navWrapper = document.querySelector('.sidebar');
+
+
+
+
+
+
+
+
+
+
+
+
+menuIcon.addEventListener('click', () => {
+    navWrapper.classList.toggle('active'); 
+});
+
 
 
 function showCustomAlert(message, type = "error") {
@@ -14,55 +32,146 @@ function showCustomAlert(message, type = "error") {
     }, 3000);
 }
 
-function addRow() {
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    
+async function fetchTableData() {
+    try {
+        const response = await fetch("http://localhost:3000/getTabledata");  
+        const result = await response.json();  // The data should be in `result.data`
+        
+        if (!result.success) {
+            throw new Error('Failed to fetch table data');
+        }
+
+        const tableBody = document.getElementById("table-body");
+        tableBody.innerHTML = ""; // Clear existing rows
+
+        result.data.forEach(entry => {  // Assuming `result.data` contains the table data
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td>${entry.name}</td>
+                <td>${entry.email}</td>
+                <td><button class="btn delete-btn" onclick="deleteRow('${entry._id}', this)">Delete</button></td>
+            `;
+            tableBody.appendChild(newRow);
+        });
+    } catch (error) {
+        console.error('Error fetching table data:', error);
+        showCustomAlert('Error fetching table data', 'error');
+    }
+}
+
+// Call this function when the page loads
+document.addEventListener("DOMContentLoaded", fetchTableData);
+
+async function addRow() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+
     if (name === "" || email === "") {
         showCustomAlert("Please fill in both fields.", "error");
         return;
     }
 
-    const table = document.getElementById('dataTable').getElementsByTagName('tbody')[0];
+    try {
+        const response = await fetch("http://localhost:3000/api/tableData", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ name, email })
+        });
 
-    const newRow = table.insertRow();
-    const detailCell = newRow.insertCell(0);
+        if (response.ok) {
+            showCustomAlert("Row added successfully!", "success");
+            fetchTableData(); // Refresh table data
+        } else {
+            showCustomAlert("Failed to add row", "error");
+        }
+    } catch (error) {
+        showCustomAlert("Failed to add row", "error");
+    }
 
-    // Create a div for the details
-    const detailDiv = document.createElement("div");
-    detailDiv.innerHTML = `<strong>Name:</strong> ${name} <br> <strong>Email:</strong> ${email} <br>`;
-
-    // Create delete button for the row
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Delete";
-    deleteButton.className = "btn delete-btn";
-    deleteButton.onclick = function () {
-        deleteRow(this);
-    };
-
-    detailCell.appendChild(detailDiv);
-    detailCell.appendChild(deleteButton);
-
-    // Clear input fields after adding the row
+    // Clear input fields
     document.getElementById('name').value = "";
     document.getElementById('email').value = "";
-
-    showCustomAlert("Row added successfully!", "success");
 }
 
-function deleteRow(button) {
-    const row = button.parentElement.parentElement;
-    row.remove();
-    showCustomAlert("Row deleted successfully!", "success");
+async function deleteRow(id, button) {
+    try {
+        const response = await fetch(`http://localhost:3000/deletetable?id=${id}`, {
+            method: "DELETE"
+        });
+
+        const result = await response.json();
+        console.log("Delete response:", result);
+
+        if (response.ok) {
+            showCustomAlert("Row deleted successfully!", "success");
+            button.parentElement.parentElement.remove(); 
+        } else {
+            showCustomAlert(result.message || "Failed to delete row", "error");
+        }
+    } catch (error) {
+        console.error("Error deleting row:", error);
+        showCustomAlert("Server error. Please try again.", "error");
+    }
 }
 
+function loadTableData() {
+    const tableBody = document.getElementById('table-body');
+    const savedData = localStorage.getItem('tableData');
 
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        data.forEach(item => {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.email}</td>
+                <td><button class="btn delete-btn" onclick="deleteRow(this)">Delete</button></td>
+            `;
+            tableBody.appendChild(newRow);
+        });
+    }
+}
+
+// Call function on page load
+document.addEventListener("DOMContentLoaded", loadTableData);
+
+function searchTable() {
+    const searchInput = document.querySelector('.search-input').value.toLowerCase();
+    const tableRows = document.querySelectorAll('#table-body tr');
+    let found = false;
+
+    tableRows.forEach(row => {
+        const nameCell = row.querySelector('td:first-child').textContent.toLowerCase();
+        if (nameCell.includes(searchInput)) {
+            row.style.display = '';
+            found = true;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const noResults = document.getElementById('no-results');
+    if (!found) {
+        noResults.style.display = 'block';
+    } else {
+        noResults.style.display = 'none';
+    }
+}
+
+document.querySelector('.search-input').addEventListener('input', searchTable);
 
 if (home) {
     home.addEventListener('click', () => {
         window.location.href = "home.html";  // Redirect to home.html when clicked
     });
-}else{
+} else {
     showCustomAlert("Home button not found", "error");
 }
+
+
+
+
+
 

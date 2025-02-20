@@ -50,7 +50,7 @@ document.getElementById("login-form").addEventListener("submit", async function(
     }
 
     try {
-        const response = await fetch('http://localhost:3000/login', { // Replace with your backend URL
+        const response = await fetch('http://localhost:3000/login', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -83,8 +83,7 @@ document.getElementById("Register-form").addEventListener("submit", async functi
     const password = document.getElementById("register-password").value.trim();
 
     // Validate input fields
-    if (!name || !email || !password) {
-        showCustomAlert("Please fill in all required fields.", "error");
+    if (!name || !email || !password) {                                                                                                                                                                                                                                         
         return;
     }
 

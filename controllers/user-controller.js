@@ -9,6 +9,9 @@ import feedbacks from "../models/customerFeedback.js"
 import driver from "../models/Driver.js"
 import trip from "../models/trip.js"
 import ErrorHandler from "../middleware/errorHandler.js"
+import user from "../models/user.js";
+import tabledata from "../models/tabledata.js";
+
 
 
 
@@ -1025,3 +1028,116 @@ export const loginPage = async (req, res) => {
         }
     });
 };
+
+// createTableDta
+export const getdata = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(new HttpError("No valid data passed, update error", 422));
+    }
+    const { name, email } = req.body;
+    let existUser;
+    try {
+        existUser = await tabledata.findOne({ email: email });
+    } catch (err) {
+        console.error("Error checking existing user:", err);
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.SIGNUP_FAILED
+        
+        });
+    
+    }
+    if (existUser) {
+        return res.json({
+            success: false,
+            ErrorHandler: ErrorHandler.USER_EXIST
+            
+        });
+    };
+    try{
+        // Save data to the Table collection
+        const dataTable = new tabledata({
+            name,
+            email
+        });
+        await dataTable.save();
+
+        res.status(200).json({
+            success: true,
+            user: {
+                name: user.name,
+                id: user._id,
+                email: user.email,
+            }
+        });
+
+    } catch (err) {
+        console.error("Error saving user:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Error fetching user",
+            error: ErrorHandler.FETCHING_USER_FAILED
+        });
+    }
+};
+
+
+
+
+export const getTabledata = async (req, res, next) => {
+    try {
+        // Fetch all users from the database
+        const Tabledata = await tabledata.find();
+
+        // Send the fetched users as a response
+        res.status(200).json({
+            success: true,
+            data: Tabledata
+        });
+
+    } catch (err) {
+        console.error('Error fetching users:', err);
+        
+        // Send an error response
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch users"
+        });
+    }
+};
+
+
+
+//  fetching one user
+export const deletetable = async (req, res) => {
+    const { id } = req.query; // Get ID from request
+
+    try {
+        const userData = await tabledata.findById(id);
+
+        if (!userData) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        // ✅ Delete the user by ID
+        await tabledata.findByIdAndDelete(id);
+
+        res.status(200).json({
+            success: true,
+            message: "Row deleted successfully",
+        });
+
+    } catch (err) {
+        console.error("Error deleting row:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Error deleting row",
+        });
+    }
+};
+
+
