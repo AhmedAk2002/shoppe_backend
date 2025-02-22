@@ -1123,7 +1123,7 @@ export const deletetable = async (req, res) => {
             });
         }
 
-        // ✅ Delete the user by ID
+        //  Delete the user by ID
         await tabledata.findByIdAndDelete(id);
 
         res.status(200).json({
@@ -1139,5 +1139,42 @@ export const deletetable = async (req, res) => {
         });
     }
 };
+
+
+
+
+export const updateTable = async (req, res) => {
+    const { id } = req.query; // Get ID from request
+    const { email } = req.body; // Get new email from request body
+
+    try {
+        const userData = await tabledata.findById(id);
+
+        if (!userData) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        // Update the email
+        userData.email = email;
+        await userData.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Email updated successfully",
+            user: userData
+        });
+
+    } catch (err) {
+        console.error("Error updating email:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Error updating email",
+        });
+    }
+};
+
 
 

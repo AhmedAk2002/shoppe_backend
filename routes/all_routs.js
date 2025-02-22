@@ -9,7 +9,7 @@ import { signup , login, getimage ,
     dailyReport ,
     getCustomerFeedback,
     getmarketdetails,Trip,
-    createDriver,getres,getUserByToken,loginPage,getdata,getTabledata,deletetable
+    createDriver,getres,getUserByToken,loginPage,getdata,getTabledata,deletetable,updateTable
 } from "../controllers/user-controller.js"
 
 
@@ -47,7 +47,6 @@ router.route('/api/trip').post(Trip);
 
 router.route('/login').post(login)
 
-// router.route('/api/loginWeb').get(weblogin); 
 
 router.route('/api/login').get(loginPage);
 
@@ -57,6 +56,7 @@ router.route('/api/login').get(loginPage);
 router.route('/api/tableData').post(getdata);
 router.route('/getTabledata').get(getTabledata);
 router.route('/deleteTable').delete(deletetable);
+router.route('/updateTable').patch(updateTable);
 
 
 

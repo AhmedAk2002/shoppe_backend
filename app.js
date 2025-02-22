@@ -10,6 +10,14 @@ const app = express();
 
 app.use(express.json());
 
+const corsOptions = {
+    origin: 'http://127.0.0.1:5500', // Allow requests from this origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Allow these HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'] // Allow these headers
+};
+
+app.use(cors(corsOptions));
+
 
 app.use(cors({
     origin: '*', // Allow all origins (change this for production)

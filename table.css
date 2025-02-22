@@ -54,6 +54,7 @@ header .menu:hover {
 header .menu:active {
     background-color: #ffffff;
 }
+
 .no_results {
     color: red;
     font-size: 1.2em;
@@ -132,7 +133,7 @@ nav a:hover, nav a:focus {
     background: none; /* Remove any background color */
     outline: none; /* Remove default focus outline */
 }
-
+tabledata
 nav a:active {
     background: none; /* Remove box color on click */
     outline: none; /* Remove focus border */
@@ -170,6 +171,7 @@ h2 {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow: hidden;
+    display: fixed;
 }
 
 .tabledata th, .tabledata td {
@@ -177,7 +179,15 @@ h2 {
     padding: 12px 15px;
     text-align: left;
 }
-
+.tabledata th.actions,
+.tabledata td.actions {
+    width: 1%;
+    white-space: nowrap;
+}
+.tabledata td.actions button {
+    padding: 4px 8px; /* Reduce padding */
+    min-width: 60px; /* Ensure a consistent size */
+}
 .tabledata th {
     background: #007BFF;
     color: white;
@@ -198,6 +208,41 @@ h2 {
 .tabledata .name-email {
     display: flex;
     flex-direction: column;
+}
+
+/* Make Actions column fit content properly */
+.tabledata th.actions, .tabledata td.actions {
+    text-align: center;
+    width: 1%; /* Shrink to fit buttons */
+    white-space: nowrap;
+    overflow: hidden;
+  
+}
+
+/* Button Container: Flexbox for alignment */
+.tabledata .btn-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Style Buttons */
+.tabledata .btn-container button {
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.tabledata .delete-btn {
+    background: red;
+    color: white;
+}
+
+.tabledata .update-btn {
+    background: #007BFF;
+    color: white;
 }
 
 /* Form Container Styles */
@@ -281,7 +326,19 @@ input:focus {
 }
 
 .delete-btn:hover {
-    background: darkred;
+    background: rgb(124, 30, 7);
+}
+
+.update-btn {
+    background: rgb(11, 74, 190);
+    color: white;
+    margin-top: 5px;
+    display: block;
+    width: 100%;
+}
+
+.update-btn:hover {
+    background: rgb(3, 44, 119);
 }
 
 /* Custom Alert Styling */
@@ -404,8 +461,6 @@ input:focus {
     .sidebar.active {
         transform: translateX(0); /* Slide in when active */
     }
-    
-   
 
     .appbar img {
         height: 50px;  /* Set default height */
@@ -460,6 +515,7 @@ input:focus {
     width: 300px;
     margin: 20px auto;
 }
+
 .search-input {
     width: 100%;
     padding: 10px;
@@ -467,6 +523,7 @@ input:focus {
     border-radius: 5px;
     font-size: 16px;
 }
+
 .search-button {
     position: absolute;
     right: 5px;

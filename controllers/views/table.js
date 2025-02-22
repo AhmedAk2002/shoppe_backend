@@ -3,22 +3,9 @@ const nav_links = document.querySelector('.nav-links');
 const menuIcon = document.querySelector('.menu');
 const navWrapper = document.querySelector('.sidebar');
 
-
-
-
-
-
-
-
-
-
-
-
 menuIcon.addEventListener('click', () => {
     navWrapper.classList.toggle('active'); 
 });
-
-
 
 function showCustomAlert(message, type = "error") {
     const alertText = document.getElementById("alert-text"); // Get the message area
@@ -35,7 +22,7 @@ function showCustomAlert(message, type = "error") {
 async function fetchTableData() {
     try {
         const response = await fetch("http://localhost:3000/getTabledata");  
-        const result = await response.json();  // The data should be in `result.data`
+        const result = await response.json();  
         
         if (!result.success) {
             throw new Error('Failed to fetch table data');
@@ -50,6 +37,7 @@ async function fetchTableData() {
                 <td>${entry.name}</td>
                 <td>${entry.email}</td>
                 <td><button class="btn delete-btn" onclick="deleteRow('${entry._id}', this)">Delete</button></td>
+                <td><button class="btn update-btn" onclick="showUpdateForm('${entry._id}', '${entry.email}')">Update</button></td>
             `;
             tableBody.appendChild(newRow);
         });
@@ -128,6 +116,7 @@ function loadTableData() {
                 <td>${item.name}</td>
                 <td>${item.email}</td>
                 <td><button class="btn delete-btn" onclick="deleteRow(this)">Delete</button></td>
+                <td><button class="btn update-btn" onclick="showUpdateForm('${item._id}', '${item.email}')">Update</button></td>
             `;
             tableBody.appendChild(newRow);
         });
@@ -161,6 +150,38 @@ function searchTable() {
 }
 
 document.querySelector('.search-input').addEventListener('input', searchTable);
+
+function showUpdateForm(id, currentEmail) {
+    const newEmail = prompt("Enter new email:", currentEmail);
+    if (newEmail) {
+        updateRow(id, newEmail);
+    }
+}
+
+async function updateRow(id, newEmail) {
+    try {
+        const response = await fetch(`http://localhost:3000/updateTable?id=${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email: newEmail })
+        });
+
+        const result = await response.json();
+        console.log("Update response:", result);
+
+        if (response.ok) {
+            showCustomAlert("Email updated successfully!", "success");
+            fetchTableData(); // Refresh table data
+        } else {
+            showCustomAlert(result.message || "Failed to update email", "error");
+        }
+    } catch (error) {
+        console.error("Error updating email:", error);
+        showCustomAlert("Server error. Please try again.", "error");
+    }
+}
 
 if (home) {
     home.addEventListener('click', () => {
