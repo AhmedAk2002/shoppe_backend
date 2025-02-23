@@ -36,8 +36,10 @@ async function fetchTableData() {
             newRow.innerHTML = `
                 <td>${entry.name}</td>
                 <td>${entry.email}</td>
-                <td><button class="btn delete-btn" onclick="deleteRow('${entry._id}', this)">Delete</button></td>
-                <td><button class="btn update-btn" onclick="showUpdateForm('${entry._id}', '${entry.email}')">Update</button></td>
+                <td class="actions">
+                    <button class="update-btn" onclick="showUpdateForm('${entry._id}', '${entry.email}')">Update</button>
+                    <button class="delete-btn" onclick="deleteRow('${entry._id}', this)">Delete</button>
+                </td>
             `;
             tableBody.appendChild(newRow);
         });
@@ -115,8 +117,10 @@ function loadTableData() {
             newRow.innerHTML = `
                 <td>${item.name}</td>
                 <td>${item.email}</td>
-                <td><button class="btn delete-btn" onclick="deleteRow(this)">Delete</button></td>
-                <td><button class="btn update-btn" onclick="showUpdateForm('${item._id}', '${item.email}')">Update</button></td>
+                <td class="actions">
+                    <button class="update-btn" onclick="showUpdateForm('${item._id}', '${item.email}')">Update</button>
+                    <button class="delete-btn" onclick="deleteRow('${item._id}', this)">Delete</button>
+                </td>
             `;
             tableBody.appendChild(newRow);
         });

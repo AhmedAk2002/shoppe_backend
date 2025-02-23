@@ -210,6 +210,34 @@ h2 {
     flex-direction: column;
 }
 
+/* Ensure the Actions column fits properly */
+.tabledata th.actions, .tabledata td.actions {
+    width: 150px; /* Fixed width for the Actions column */
+    text-align: center; /* Center-align the content */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Button Container: Flexbox for alignment */
+.tabledata .btn-container {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    justify-content: center;
+    gap: 8px; /* Space between buttons */
+}
+
+/* Style Buttons */
+.tabledata .btn-container button {
+    padding: 6px 12px; /* Slightly smaller padding */
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px; /* Smaller font size for buttons */
+    white-space: nowrap; /* Prevent button text from wrapping */
+    border-radius: 5px;
+    /* Remove box-shadow */
+    box-shadow: none;
+}
+
 /* Make Actions column fit content properly */
 .tabledata th.actions, .tabledata td.actions {
     text-align: center;
@@ -223,7 +251,7 @@ h2 {
 .tabledata .btn-container {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    
 }
 
 /* Style Buttons */
@@ -231,7 +259,7 @@ h2 {
     padding: 8px 12px;
     border: none;
     cursor: pointer;
-    border-radius: 5px;
+    ;
     font-weight: bold;
 }
 
