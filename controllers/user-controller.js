@@ -11,6 +11,7 @@ import trip from "../models/trip.js"
 import ErrorHandler from "../middleware/errorHandler.js"
 import user from "../models/user.js";
 import tabledata from "../models/tabledata.js";
+import { Transaction } from "../models/transactions.js";
 
 
 
@@ -353,7 +354,8 @@ export const login = async (req, res) => {
             user: { 
                 id: existingUser.id, 
                 email: existingUser.email, 
-                phonenumber: existingUser.phonenumber 
+                phonenumber: existingUser.phonenumber ,
+                name: existingUser.name,
             },
             token
         });
@@ -1177,4 +1179,66 @@ export const updateTable = async (req, res) => {
 };
 
 
+// create transaction
+export const transactions = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(new HttpError("No valid data passed, update error", 422));
+    }
+    const { userId, amount, type, category, note } = req.body;
 
+try {
+    if(!userId || !amount || !type || !category){
+        return res.status(400).json({
+            success: false,
+            message: "All fields are required"
+        });
+    }
+    const transaction = new Transaction(req.body);
+    await transaction.save();
+    res.status(201).json(transaction);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export const getTransactions = async (req,res ) =>{
+    try {
+        const transactions = await Transaction.find({ userId: req.params.userId }).sort({ date: -1 });
+        res.json(transactions);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+}
+
+export const delTransactions = async (req,res)=>{
+
+    try {
+        await Transaction.findByIdAndDelete(req.params.id);
+        res.json({ message: "Transaction deleted" });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    };
+
+
+export const summaryTransactions = async (req,res)=>{
+    try {
+        const income = await Transaction.aggregate([
+          { $match: { userId: req.params.userId, type: "income" } },
+          { $group: { _id: null, total: { $sum: "$amount" } } }
+        ]);
+    
+        const expenses = await Transaction.aggregate([
+          { $match: { userId: req.params.userId, type: "expense" } },
+          { $group: { _id: null, total: { $sum: "$amount" } } }
+        ]);
+    
+        res.json({
+          income: income[0]?.total || 0,
+          expenses: expenses[0]?.total || 0
+        });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    };

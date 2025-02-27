@@ -259,19 +259,18 @@ h2 {
     padding: 8px 12px;
     border: none;
     cursor: pointer;
+    ;
     font-weight: bold;
 }
 
 .tabledata .delete-btn {
     background: red;
     color: white;
-    border: none;
 }
 
 .tabledata .update-btn {
     background: #007BFF;
     color: white;
-    border: none;
 }
 
 /* Form Container Styles */
