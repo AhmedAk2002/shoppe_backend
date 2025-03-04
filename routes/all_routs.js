@@ -9,7 +9,9 @@ import { signup , login, getimage ,
     dailyReport ,
     getCustomerFeedback,
     getmarketdetails,Trip,
-    createDriver,getres,getUserByToken,loginPage,getdata,getTabledata,deletetable,updateTable,transactions,getTransactions,delTransactions,summaryTransactions
+    createDriver,getres,getUserByToken,loginPage,getdata,
+    getTabledata,deletetable,updateTable,transactions,getTransactions,
+    delTransactions,summaryTransactions,getAllTransactions
 } from "../controllers/user-controller.js"
 
 
@@ -53,9 +55,11 @@ router.route('/api/login').get(loginPage);
 // transactions
 
 router.route("/transactions").post(transactions)
+router.route("/getAllTransactions").get(getAllTransactions)
 router.route("/transactions/:userId").get(getTransactions)
 router.route("/transactions/:id").delete(delTransactions)
 router.route("/transactions/summary/:userId").get(summaryTransactions)
+
 
 // webTable
 router.route('/api/tableData').post(getdata);

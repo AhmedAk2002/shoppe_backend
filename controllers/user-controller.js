@@ -1179,28 +1179,54 @@ export const updateTable = async (req, res) => {
 };
 
 
-// create transaction
-export const transactions = async (req, res, next) => {
+// Transactions crate
+
+export const transactions = async (req, res) => {
+    // Validate request
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return next(new HttpError("No valid data passed, update error", 422));
+        return res.status(422).json({ success: false, message: "Invalid data", errors: errors.array() });
     }
+
     const { userId, amount, type, category, note } = req.body;
 
-try {
-    if(!userId || !amount || !type || !category){
-        return res.status(400).json({
+    try {
+        // Check required fields
+        if (!userId || !amount || !type || !category) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields (userId, amount, type, category) are required"
+            });
+        }
+
+        // Create and save transaction
+        const transaction = new Transaction({
+            userId,
+            amount,
+            type,
+            category,
+            note: note || "" // Optional field
+        });
+
+        await transaction.save();
+
+        // Send success response
+        res.status(201).json({
+            success: true,
+            message: "Transaction created successfully",
+            transaction
+        });
+
+    } catch (error) {
+        console.error("Transaction error:", error);
+        res.status(500).json({
             success: false,
-            message: "All fields are required"
+            message: "Server error",
+            error: error.message
         });
     }
-    const transaction = new Transaction(req.body);
-    await transaction.save();
-    res.status(201).json(transaction);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-}
+};
+
 
 export const getTransactions = async (req,res ) =>{
     try {
@@ -1242,3 +1268,21 @@ export const summaryTransactions = async (req,res)=>{
         res.status(500).json({ error: error.message });
       }
     };
+
+export const getAllTransactions = async (req, res) => {
+    try {
+        // Retrieve all transactions and sort by date (descending)
+        const transactions = await Transaction.find().sort({ date: -1 });
+
+        // If no transactions are found
+        if (transactions.length === 0) {
+            return res.status(404).json({ message: "No transactions found" });
+        }
+
+        // Respond with the transactions
+        res.json(transactions);
+    } catch (error) {
+        console.error(error); // Log error for debugging
+        res.status(500).json({ error: error.message });
+    }
+};
